@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>غيوم رسائل الأمهات – ملتقى أولياء الأمور</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;800;900&family=Lalezar&family=Reem+Kufi+Fun:wght@600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:'Cairo',sans-serif}
+body{background:linear-gradient(180deg,#6a8dff 0%,#8fb4ff 22%,#c3b8ff 48%,#ffc6e0 74%,#ffe3c4 100%);position:relative}
+
+/* ====== background layers ====== */
+#bg,#sky{position:absolute;inset:0;overflow:hidden}
+#bg{z-index:0}
+#sky{z-index:3}
+.glow{position:absolute;border-radius:50%;filter:blur(60px);opacity:.55}
+.g1{width:55vmin;height:55vmin;background:#fff3a8;top:-12vmin;left:-10vmin}
+.g2{width:60vmin;height:60vmin;background:#ff9ccf;bottom:-20vmin;right:-15vmin;opacity:.45}
+.g3{width:45vmin;height:45vmin;background:#9fe8ff;top:30vh;right:30vw;opacity:.35}
+.sun{position:absolute;top:5vh;left:5vw;width:14vmin;height:14vmin;border-radius:50%;
+ background:radial-gradient(circle at 40% 38%,#fffbe0 0%,#ffe066 45%,#ffb627 100%);
+ box-shadow:0 0 50px 18px rgba(255,214,90,.6),0 0 120px 60px rgba(255,190,120,.35);animation:pulse 4s ease-in-out infinite}
+.sun::before{content:"";position:absolute;inset:-5vmin;border-radius:50%;
+ background:repeating-conic-gradient(rgba(255,226,120,.45) 0 8deg,transparent 8deg 22deg);
+ -webkit-mask:radial-gradient(circle,transparent 46%,#000 47%,#000 70%,transparent 71%);
+ mask:radial-gradient(circle,transparent 46%,#000 47%,#000 70%,transparent 71%);animation:spin 30s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{50%{transform:scale(1.05)}}
+
+.far{position:absolute;opacity:.55;filter:blur(1px);animation:drift linear infinite}
+@keyframes drift{from{transform:translateX(110vw)}to{transform:translateX(-40vw)}}
+
+.spark{position:absolute;color:#fff;animation:twinkle ease-in-out infinite;text-shadow:0 0 10px #fff}
+@keyframes twinkle{0%,100%{opacity:.15;transform:scale(.6) rotate(0)}50%{opacity:1;transform:scale(1.1) rotate(25deg)}}
+
+.float{position:absolute;bottom:-10vh;animation:rise linear infinite;opacity:.9;filter:drop-shadow(0 .6vmin 1vmin rgba(80,40,160,.3))}
+@keyframes rise{0%{transform:translateY(0) translateX(0) rotate(-8deg)}50%{transform:translateY(-60vh) translateX(3vw) rotate(8deg)}100%{transform:translateY(-125vh) translateX(-2vw) rotate(-6deg)}}
+
+.balloon{position:absolute;bottom:-25vh;animation:rise linear infinite}
+.balloon .b{width:7vmin;height:8.6vmin;border-radius:50% 50% 48% 48%/55% 55% 45% 45%;position:relative;
+ box-shadow:inset -1.2vmin -1.2vmin 0 rgba(0,0,0,.08),inset 1vmin 1vmin 0 rgba(255,255,255,.35)}
+.balloon .b::after{content:"";position:absolute;bottom:-1vmin;left:50%;transform:translateX(-50%);border:0.8vmin solid transparent;border-bottom-color:inherit}
+.balloon .b span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:4.6vmin;text-shadow:0 .3vmin 0 rgba(0,0,0,.15)}
+.balloon .s{width:2px;height:11vmin;background:rgba(255,255,255,.75);margin:0 auto}
+
+/* rolling hills */
+.hills{position:absolute;bottom:0;left:0;width:100%;height:20vh;z-index:2}
+
+/* ====== header ====== */
+header{position:absolute;top:2vh;left:0;right:0;text-align:center;z-index:6;pointer-events:none}
+header .title{display:inline-block;font-family:'Lalezar',sans-serif;font-size:7vmin;line-height:1.15;
+ background:linear-gradient(180deg,#ffffff 0%,#fff6d6 60%,#ffe08a 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+ filter:drop-shadow(0 .5vmin 0 #e0559b) drop-shadow(0 1vmin 0 #7a5cff) drop-shadow(0 1.6vmin 2vmin rgba(60,30,140,.35));
+ animation:titleFloat 4s ease-in-out infinite}
+@keyframes titleFloat{50%{transform:translateY(-.6vh)}}
+header .ribbon{margin-top:1.4vh;display:inline-flex;align-items:center;gap:1.2vmin;
+ background:linear-gradient(90deg,#ff7eb6,#a685ff,#5fb4ff);color:#fff;font-weight:800;font-size:2.15vmin;
+ padding:.8vh 3vmin;border-radius:50px;box-shadow:0 .6vmin 0 rgba(90,50,170,.35),0 1.5vmin 3vmin rgba(90,50,170,.3);
+ border:3px solid rgba(255,255,255,.85)}
+
+.counter{position:absolute;top:2.5vh;right:2.2vw;z-index:7;text-align:center;
+ background:rgba(255,255,255,.9);backdrop-filter:blur(6px);border-radius:2.4vmin;padding:1vh 2vmin;
+ box-shadow:0 1vmin 2.5vmin rgba(90,50,170,.25);border:3px solid #fff}
+.counter small{display:block;font-size:1.5vmin;color:#8a6bd6;font-weight:800}
+.counter b{font-size:4.2vmin;line-height:1;font-weight:900;background:linear-gradient(135deg,#ff6fa9,#7a5cff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.logo{position:absolute;top:2.5vh;left:2.2vw;z-index:7;width:9vmin;height:9vmin;border-radius:50%;
+ background:#fff;display:flex;align-items:center;justify-content:center;font-size:4.5vmin;
+ box-shadow:0 1vmin 2.5vmin rgba(90,50,170,.25);border:3px solid #ffe08a}
+
+/* ====== message clouds ====== */
+.cloud{position:absolute;left:0;will-change:transform}
+.cloud .bob{animation:bob ease-in-out infinite alternate}
+@keyframes bob{from{transform:translateY(-1.2vh) rotate(-1deg)}to{transform:translateY(1.2vh) rotate(1deg)}}
+.puff{position:relative;min-width:25vmin;max-width:38vmin;padding:2.6vmin 3.6vmin 2.3vmin;text-align:center;
+ background:radial-gradient(ellipse at 50% 20%,#ffffff 55%,#f1f4ff 100%);border-radius:6vmin;
+ filter:drop-shadow(0 1.2vmin 0 rgba(170,160,255,.45)) drop-shadow(0 2.4vmin 3vmin rgba(70,40,150,.25))}
+.puff i{position:absolute;border-radius:50%;background:radial-gradient(circle at 45% 35%,#fff 60%,#f3f5ff 100%);z-index:-1}
+.puff i:nth-child(1){width:45%;aspect-ratio:1;top:-34%;right:12%}
+.puff i:nth-child(2){width:32%;aspect-ratio:1;top:-20%;left:10%}
+.puff i:nth-child(3){width:26%;aspect-ratio:1;top:-14%;left:38%}
+.puff i:nth-child(4){width:24%;aspect-ratio:1;bottom:-14%;left:22%}
+.puff i:nth-child(5){width:22%;aspect-ratio:1;bottom:-12%;right:26%}
+.puff .to{display:inline-block;font-size:1.55vmin;font-weight:900;padding:.25vh 1.5vmin;border-radius:20px;margin-bottom:.7vh;color:#fff;
+ box-shadow:0 .35vmin 0 rgba(0,0,0,.12)}
+.to.sci{background:linear-gradient(135deg,#34d399,#10a37f)}
+.to.math{background:linear-gradient(135deg,#ffa95c,#ff6b6b)}
+.to.both{background:linear-gradient(135deg,#ff7eb6,#8b6bff)}
+.puff .msg{font-size:2.35vmin;font-weight:800;color:#3b2f6b;line-height:1.6;word-wrap:break-word}
+.puff .from{margin-top:.5vh;font-size:1.65vmin;color:#c0569a;font-weight:700}
+.puff .heart{position:absolute;top:-2.4vmin;left:-1.2vmin;font-size:3.2vmin;animation:beat 1.4s ease-in-out infinite}
+@keyframes beat{50%{transform:scale(1.25)}}
+.cloud.new .puff{animation:popin 1.2s cubic-bezier(.2,1.6,.4,1)}
+@keyframes popin{0%{transform:scale(.1);opacity:0}100%{transform:scale(1);opacity:1}}
+.cloud.big .puff{filter:drop-shadow(0 0 1.6vmin #ffe066) drop-shadow(0 0 3vmin #ff9ccf) drop-shadow(0 2.4vmin 3vmin rgba(70,40,150,.25))}
+
+/* burst */
+.burst{position:fixed;z-index:30;pointer-events:none;font-size:3vmin;animation:burst 1.4s ease-out forwards}
+@keyframes burst{from{transform:translate(0,0) scale(.5);opacity:1}to{transform:translate(var(--x),var(--y)) scale(1.2);opacity:0}}
+
+/* ====== compose panel ====== */
+.panel{position:absolute;bottom:2vh;left:50%;transform:translateX(-50%);z-index:10;width:min(94vw,880px);
+ background:rgba(255,255,255,.88);backdrop-filter:blur(10px);border-radius:28px;padding:14px 16px;border:3px solid #fff;
+ box-shadow:0 14px 44px rgba(80,40,160,.3);display:grid;grid-template-columns:1fr auto;gap:10px;transition:transform .5s,opacity .5s}
+.panel.hide{transform:translate(-50%,150%);opacity:0;pointer-events:none}
+.panel textarea{grid-column:1/-1;resize:none;height:64px;border:2px solid #e3dcff;border-radius:16px;padding:10px 14px;
+ font-family:inherit;font-size:17px;font-weight:600;color:#3b2f6b;outline:none;background:#fff}
+.panel textarea:focus,.panel input:focus{border-color:#a685ff;box-shadow:0 0 0 4px rgba(166,133,255,.2)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.panel input{flex:1;min-width:160px;border:2px solid #e3dcff;border-radius:14px;padding:8px 12px;font-family:inherit;font-size:15px;outline:none}
+.chip{border:2px solid #e3dcff;background:#fff;border-radius:30px;padding:7px 14px;font-family:inherit;font-weight:800;font-size:14px;color:#5b4a99;cursor:pointer;transition:.2s}
+.chip.on.sci{background:linear-gradient(135deg,#34d399,#10a37f);border-color:transparent;color:#fff}
+.chip.on.math{background:linear-gradient(135deg,#ffa95c,#ff6b6b);border-color:transparent;color:#fff}
+.chip.on.both{background:linear-gradient(135deg,#ff7eb6,#8b6bff);border-color:transparent;color:#fff}
+.send{background:linear-gradient(135deg,#ff7eb6,#8b6bff);color:#fff;border:0;border-radius:18px;padding:0 26px;
+ font-family:inherit;font-weight:900;font-size:19px;cursor:pointer;box-shadow:0 6px 0 #6a4cd6;align-self:stretch}
+.send:active{transform:translateY(4px);box-shadow:0 2px 0 #6a4cd6}
+
+.tools{position:absolute;bottom:2vh;left:1.5vw;z-index:11;display:flex;flex-direction:column;gap:8px;transition:opacity .4s}
+.tools button{width:46px;height:46px;border-radius:50%;border:0;background:rgba(255,255,255,.9);font-size:20px;cursor:pointer;box-shadow:0 4px 14px rgba(80,40,160,.25)}
+body.photo .tools{opacity:.08}
+body.photo .tools:hover{opacity:1}
+.credit{position:absolute;bottom:1.4vh;right:1.6vw;z-index:12;font-size:2.1vmin;color:#fff;font-weight:900;
+ background:linear-gradient(135deg,#ff7eb6,#8b6bff);padding:.6vh 2vmin;border-radius:30px;border:3px solid #fff;
+ box-shadow:0 .6vmin 1.6vmin rgba(80,40,160,.35)}
+body.photo .credit{right:50%;transform:translateX(50%);font-size:2.6vmin;bottom:2.4vh}
+
+.modal{position:fixed;inset:0;background:rgba(40,20,90,.45);display:none;align-items:center;justify-content:center;z-index:50}
+.modal.show{display:flex}
+.modal div{background:#fff;border-radius:20px;padding:22px;max-width:340px;text-align:center;font-weight:800;color:#3b2f6b}
+.modal button{margin:14px 6px 0;padding:8px 18px;border-radius:14px;border:0;font-family:inherit;font-weight:800;cursor:pointer}
+.yes{background:#ff6b6b;color:#fff}.no{background:#efeaff;color:#3b2f6b}
+.toast{position:fixed;top:45%;left:50%;transform:translate(-50%,-50%) scale(.6);opacity:0;z-index:40;font-family:'Lalezar',sans-serif;font-size:7vmin;color:#fff;
+ filter:drop-shadow(0 .5vmin 0 #e0559b) drop-shadow(0 1vmin 2vmin rgba(60,30,140,.4));pointer-events:none;transition:.5s}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+</style>
+</head>
+<body>
+<div id="bg">
+  <div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
+  <div class="sun"></div>
+  <svg class="hills" viewBox="0 0 1440 200" preserveAspectRatio="none">
+    <path d="M0,120 C200,40 380,170 620,110 C860,50 1040,160 1240,100 C1340,70 1400,90 1440,100 L1440,200 L0,200Z" fill="#b8f2c6" opacity=".8"/>
+    <path d="M0,160 C240,100 420,190 700,150 C980,110 1180,190 1440,140 L1440,200 L0,200Z" fill="#7fdc9b"/>
+  </svg>
+</div>
+<div id="sky"></div>
+
+<div class="logo">🏫</div>
+<header>
+  <div class="title">غيوم الشكر والمحبة</div><br>
+  <div class="ribbon">💌 رسائل الأمهات لمعلمات العلوم والرياضيات ✨ ملتقى أولياء الأمور ✨ جيل السلام (١-٤)</div>
+</header>
+<div class="counter"><small>غيمة محبة</small><b id="count">0</b></div>
+
+<form class="panel" id="panel">
+  <textarea id="msg" maxlength="140" placeholder="اكتبي رسالتك للمعلمات هنا... 💌"></textarea>
+  <div class="row">
+    <input id="name" maxlength="30" placeholder="اسمك (اختياري) مثل: أم محمد">
+    <button type="button" class="chip sci on" data-to="sci">🔬 معلمة العلوم</button>
+    <button type="button" class="chip math" data-to="math">🔢 معلمة الرياضيات</button>
+  </div>
+  <button class="send" type="submit">أطلقي غيمتك ☁️</button>
+</form>
+
+<div class="tools">
+  <button id="photo" title="وضع التصوير">📸</button>
+  <button id="fs" title="ملء الشاشة">⛶</button>
+  <button id="clear" title="مسح الرسائل">🗑️</button>
+</div>
+<div class="credit">🎨 تصميم المعلمة: هاجر البلوشية</div>
+<div class="toast" id="toast">شكرًا لكِ 💜</div>
+<div class="modal" id="modal"><div>هل تريدين مسح كل الغيوم؟<br><button class="yes" id="yes">نعم، امسحي</button><button class="no" id="no">لا</button></div></div>
+
+<script>
+const sky=document.getElementById('sky'),bg=document.getElementById('bg');
+const KEY='mothers_clouds_v1';
+let messages=[];
+try{messages=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){messages=[]}
+const labels={sci:'🔬 إلى معلمة العلوم',math:'🔢 إلى معلمة الرياضيات',both:'💜 إلى معلماتنا الغاليات'};
+const hearts=['💖','💜','💛','🌸','⭐','💐'];
+let to='sci';
+const welcome={text:'أهلًا بكِ في ملتقى أولياء الأمور 🌸 اتركي رسالة محبة لمعلمات أبنائك',to:'both',name:'معلمات جيل السلام'};
+
+function save(){try{localStorage.setItem(KEY,JSON.stringify(messages))}catch(e){}}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+const R=(a,b)=>a+Math.random()*(b-a);
+
+/* ---- decorations ---- */
+const cloudSVG=c=>`<svg viewBox="0 0 200 90" width="100%"><g fill="${c}"><ellipse cx="60" cy="60" rx="50" ry="26"/><ellipse cx="110" cy="45" rx="45" ry="36"/><ellipse cx="150" cy="62" rx="42" ry="24"/><ellipse cx="90" cy="66" rx="60" ry="22"/></g></svg>`;
+for(let i=0;i<6;i++){const f=document.createElement('div');f.className='far';f.style.width=R(14,26)+'vmin';f.style.top=R(10,70)+'vh';
+ f.style.animationDuration=R(80,140)+'s';f.style.animationDelay=(-R(0,140))+'s';f.innerHTML=cloudSVG('#ffffff');bg.appendChild(f)}
+for(let i=0;i<22;i++){const s=document.createElement('div');s.className='spark';s.textContent=Math.random()<.5?'✦':'✧';
+ s.style.left=R(0,100)+'vw';s.style.top=R(5,75)+'vh';s.style.fontSize=R(1.4,3)+'vmin';s.style.animationDuration=R(2,4.5)+'s';s.style.animationDelay=(-R(0,4))+'s';bg.appendChild(s)}
+const icons=['🔬','➕','🧪','✖️','🔭','➗','🧲','📐','🌱','🔢','🪐','📏','💡','➖','🌍','🧮','⚛️','🦋','🔟','🌡️'];
+for(let i=0;i<icons.length;i++){const h=document.createElement('div');h.className='float';h.textContent=icons[i];
+ h.style.left=R(2,98)+'vw';h.style.fontSize=R(3,5.2)+'vmin';h.style.animationDuration=R(16,28)+'s';h.style.animationDelay=(-R(0,28))+'s';bg.appendChild(h)}
+const bl=['+','×','÷','=','−'];
+['#ff7eb6','#8b6bff','#ffd166','#5fd3a8','#5fb4ff'].forEach((c,i)=>{const b=document.createElement('div');b.className='balloon';
+ b.style.left=(i<3?R(1,10):R(88,96))+'vw';b.style.animationDuration=R(30,45)+'s';b.style.animationDelay=(-R(0,45))+'s';
+ b.innerHTML=`<div class="b" style="background:${c};color:${c}"><span>${bl[i]}</span></div><div class="s"></div>`;bg.appendChild(b)});
+
+/* ---- message clouds ---- */
+function laneTop(i){const slots=[19,33,47,61,26,40,54,22,50,36];return slots[i%slots.length]+R(-2,2)}
+function makeCloud(m,i,isNew){
+  const c=document.createElement('div');
+  c.className='cloud'+(isNew?' new big':'');
+  c.style.top=laneTop(i)+'vh';
+  const scale=R(.9,1.1);
+  c.innerHTML=`<div class="bob" style="animation-duration:${R(3,5.5)}s"><div class="puff" style="transform:scale(${scale.toFixed(2)})">
+    <i></i><i></i><i></i><i></i><i></i><span class="heart">${hearts[i%hearts.length]}</span>
+    <span class="to ${m.to}">${labels[m.to]}</span>
+    <div class="msg">${esc(m.text)}</div>
+    ${m.name?`<div class="from">— ${esc(m.name)}</div>`:''}
+  </div></div>`;
+  sky.appendChild(c);
+  const dur=R(50,80),w=window.innerWidth;
+  const anim=c.animate([{transform:`translateX(${w+60}px)`},{transform:`translateX(-${c.offsetWidth+100}px)`}],{duration:dur*1000,iterations:Infinity});
+  anim.currentTime=(isNew?0.45:Math.random())*dur*1000;
+  if(isNew) setTimeout(()=>c.classList.remove('big','new'),7000);
+}
+function render(){
+  sky.innerHTML='';
+  (messages.length?messages:[welcome]).forEach((m,i)=>makeCloud(m,i,false));
+  document.getElementById('count').textContent=messages.length;
+}
+function burst(){
+  const cx=innerWidth/2,cy=innerHeight*.45;
+  for(let i=0;i<18;i++){const e=document.createElement('div');e.className='burst';e.textContent=['🔬','➕','🧪','✖️','⭐','🔢','🪐','💜','📐'][i%9];
+   const a=Math.PI*2*i/18,d=R(120,260);e.style.left=cx+'px';e.style.top=cy+'px';
+   e.style.setProperty('--x',Math.cos(a)*d+'px');e.style.setProperty('--y',Math.sin(a)*d+'px');
+   document.body.appendChild(e);setTimeout(()=>e.remove(),1500)}
+}
+
+document.querySelectorAll('.chip').forEach(ch=>ch.onclick=()=>{
+  document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));ch.classList.add('on');to=ch.dataset.to;});
+document.getElementById('panel').addEventListener('submit',e=>{
+  e.preventDefault();
+  const t=document.getElementById('msg').value.trim();
+  if(!t){document.getElementById('msg').focus();return}
+  const m={text:t,to,name:document.getElementById('name').value.trim()};
+  if(!messages.length) sky.innerHTML='';
+  messages.push(m);save();makeCloud(m,messages.length-1,true);burst();
+  document.getElementById('count').textContent=messages.length;
+  document.getElementById('msg').value='';document.getElementById('name').value='';
+  const t2=document.getElementById('toast');t2.classList.add('show');setTimeout(()=>t2.classList.remove('show'),1700);
+});
+document.getElementById('photo').onclick=()=>{document.getElementById('panel').classList.toggle('hide');document.body.classList.toggle('photo')};
+document.getElementById('fs').onclick=()=>{try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}};
+const modal=document.getElementById('modal');
+document.getElementById('clear').onclick=()=>modal.classList.add('show');
+document.getElementById('no').onclick=()=>modal.classList.remove('show');
+document.getElementById('yes').onclick=()=>{messages=[];save();render();modal.classList.remove('show')};
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(render,300)});
+render();
+</script>
+</body>
+</html>
