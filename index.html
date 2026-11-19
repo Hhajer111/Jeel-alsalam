@@ -82,6 +82,9 @@ h1 .glint::after{content:"";position:absolute;left:18%;right:18%;bottom:-.08em;h
 .counter .lbl{font-size:clamp(11px,1.2vmin + 4px,17px);font-weight:700;color:var(--ink-soft);white-space:nowrap}
 .counter .num{font-family:'El Messiri',serif;font-size:clamp(26px,4.4vmin,64px);font-weight:700;line-height:1.1;
   background:linear-gradient(135deg,#7c6cf0,#e070a8);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pinfo{font-size:clamp(10px,1vmin + 3px,15px);font-weight:700;color:var(--ink-soft)}
+.pinfo:empty{display:none}
+body:not(.screen) .pinfo{display:none}
 .counter.bump{animation:bump .6s ease}
 @keyframes bump{40%{transform:scale(1.12)}}
 
@@ -274,7 +277,7 @@ body.screen .mcredit{display:none!important}
   <p class="sub">كلماتكم الجميلة تصنع في قلوب معلماتنا سماءً من السعادة</p>
 </header>
 
-<div class="counter" id="counter"><div class="lbl">عدد غيوم المحبة</div><div class="num" id="num">٠</div></div>
+<div class="counter" id="counter"><div class="lbl">عدد غيوم المحبة</div><div class="num" id="num">٠</div><div class="pinfo" id="pageInfo"></div></div>
 <div class="status-pill" id="statusPill"></div>
 
 <div id="field" aria-live="polite"></div>
@@ -433,9 +436,10 @@ function layoutField(){
   field.style.top=top+'px'; field.style.height=Math.max(120,bottom-top)+'px';
   const W=innerWidth, H=Math.max(120,bottom-top);
   const target = MODE==='screen' ? 280*Math.max(1,W/1500) : (W<640? 170 : 240);
-  let cols=Math.max(2,Math.floor(W/target)); if(MODE==='screen') cols=Math.min(cols,5);
-  let rows=Math.max(1,Math.floor(H/(MODE==='screen'?250*Math.max(1,H/1000):(W<640?130:160))));
-  if(MODE==='screen') rows=Math.min(rows,3); else rows=Math.min(rows,3);
+  let cols=Math.max(2,Math.floor(W/target));
+  let rows=Math.max(1,Math.floor(H/(W<640?130:160)));
+  rows=Math.min(rows,3);
+  if(MODE==='screen'){ cols = W>=1000 ? 5 : 3; rows = W>=1000 ? 2 : 3; }   // 10 clouds per page
   const pad=Math.max(10,W*.02), cw=(W-2*pad)/cols, ch=H/rows;
   const old=slots; slots=[];
   for(let r=0;r<rows;r++) for(let c=0;c<cols;c++){
@@ -446,8 +450,27 @@ function layoutField(){
   slots.sort(()=>Math.random()-.5);
   // re-host previous clouds
   old.forEach(o=>{ if(o.el) o.el.remove() });
-  fillSlots(true);
+  if(MODE==='screen'){ slots.sort((a,b)=>a.r-b.r||a.c-b.c); showPage(false); } else fillSlots(true);
 }
+
+/* ---------- screen mode: pages of 10, cycling ---------- */
+let pageIdx=0;
+const PAGE_MS=15000;
+function pageCount(){ return Math.max(1, Math.ceil(messages.length/slots.length)) }
+function showPage(animated, freshId){
+  const n=slots.length, newest=[...messages].reverse();
+  if(pageIdx>=pageCount()) pageIdx=0;
+  const chunk=newest.slice(pageIdx*n, pageIdx*n+n);
+  const order=slots.map((s,k)=>k).sort(()=>Math.random()-.5);
+  const outDelay = animated ? 700 : 0;
+  slots.forEach(s=>{ if(s.el){ const o=s.el; o.classList.add('hidden'); setTimeout(()=>o.remove(),900) } s.el=null; s.id=null });
+  chunk.forEach((m,i)=>{ const slot=slots[order[i]];
+    const el=show(slot,m,{delay: outDelay + 140*i, fresh: m.id===freshId});
+    if(m.id===freshId && pendingLaunch && pendingLaunch.text===m.text){ const r=pendingLaunch.rect; pendingLaunch=null; setTimeout(()=>flyTo(el,r), outDelay) }
+  });
+  const pi=$('pageInfo'); if(pi){ const pc=pageCount(); pi.textContent = pc>1 ? `المجموعة ${AR(pageIdx+1)} من ${AR(pc)}` : ''; }
+}
+function nextPage(){ if(pageCount()<=1) return; pageIdx=(pageIdx+1)%pageCount(); showPage(true) }
 
 function cloudSize(slot, text){
   const scale = MODE==='screen'? 1 : 1;
@@ -524,6 +547,9 @@ function rotate(){
   show(pickSlotForNew(), hidden[rotateIdx]);
 }
 
+let pagerT=null;
+function resetPager(){ clearInterval(pagerT); pagerT=setInterval(nextPage, PAGE_MS) }
+window.resetPager=resetPager;
 let pendingLaunch=null, loaded=false;   // {text, rect} — set when this device just sent a message
 function onMessages(list){
   const approved=list.filter(m=>m.status==='approved').sort((a,b)=>a.createdAt-b.createdAt);
@@ -534,6 +560,13 @@ function onMessages(list){
   $('empty').style.display = approved.length? 'none':'block';
   // removed
   slots.forEach(s=>{ if(s.id && !byId.has(s.id)){ const el=s.el; el.classList.add('hidden'); setTimeout(()=>el.remove(),900); s.id=null; s.el=null } });
+  if(MODE==='screen'){
+    const fresh=approved.filter(m=>!prevIds.has(m.id));
+    if(firstLoad){ showPage(false); return }
+    if(fresh.length){ pageIdx=0; showPage(true, fresh[fresh.length-1].id); resetPager(); }
+    else showPage(false);
+    return;
+  }
   if(firstLoad || !slots.length){ fillSlots(true); return }
   const fresh=approved.filter(m=>!prevIds.has(m.id));
   fresh.forEach(m=>{
@@ -651,7 +684,7 @@ if(MODE==='screen'){
   $('fsbtn').onclick=()=>{ try{ document.fullscreenElement? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(()=>{}) }catch{} };
   let it; const wake=()=>{ document.body.classList.remove('idle'); clearTimeout(it); it=setTimeout(()=>document.body.classList.add('idle'),3500) };
   addEventListener('mousemove',wake); wake();
-  setInterval(rotate, 9000);
+  window.resetPager();
   let wt;
   const closeW=()=>{ document.body.classList.remove('writing'); clearTimeout(wt); try{document.activeElement.blur()}catch{} };
   const armW=()=>{ clearTimeout(wt); wt=setTimeout(closeW, 90000) };
