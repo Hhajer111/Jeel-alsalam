@@ -235,6 +235,31 @@ body.admin .apanel{display:block;position:fixed;z-index:20;left:50%;transform:tr
   .card{padding:36px 20px 24px;border-radius:26px}
 }
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important}}
+
+/* ===== screen-mode touch writing ===== */
+.writebtn{display:none}
+body.screen .writebtn{display:flex;align-items:center;gap:12px;position:fixed;z-index:9;bottom:2.4vh;right:2.2vw;border:0;cursor:pointer;
+  padding:18px 34px;border-radius:60px;font-family:inherit;font-weight:800;font-size:clamp(18px,1.8vmin + 8px,32px);color:#fff;
+  background:linear-gradient(135deg,#8b7cf6 0%,#c57bd9 55%,#f29bb5 100%);box-shadow:0 14px 34px -8px rgba(139,124,246,.8);
+  animation:wpulse 2.6s ease-in-out infinite}
+@keyframes wpulse{50%{box-shadow:0 14px 34px -8px rgba(139,124,246,.8),0 0 0 14px rgba(255,255,255,.25)}}
+body.screen.writing .writebtn{display:none}
+body.screen .fsbtn{bottom:auto;right:auto;top:2.4vh;left:2.2vw}
+.wclose{display:none}
+body.screen.writing .composer{display:block;z-index:30;width:min(980px,94vw);bottom:auto;top:50%;transform:translate(-50%,-50%);padding:26px;border-radius:32px;
+  background:rgba(255,255,255,.9)}
+body.screen.writing .wshade{display:block}
+.wshade{display:none;position:fixed;inset:0;z-index:29;background:rgba(46,38,100,.35);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+body.screen.writing .wclose{display:block;position:absolute;top:-18px;left:-18px;width:56px;height:56px;border-radius:50%;border:0;background:#fff;
+  box-shadow:0 8px 20px rgba(60,45,140,.3);font-size:24px;cursor:pointer;color:#5b4fa5}
+body.screen.writing .wtitle{display:block}
+.wtitle{display:none;font-family:'El Messiri',serif;font-size:34px;font-weight:700;text-align:center;margin-bottom:14px;color:#3a2f7a}
+body.screen .composer textarea{height:150px;font-size:26px;border-radius:20px;padding:16px 20px}
+body.screen .composer input{font-size:22px;padding:14px 18px;border-radius:18px}
+body.screen .seg button{font-size:22px;padding:12px 22px}
+body.screen .launch{font-size:26px;min-height:68px;padding:0 40px;border-radius:22px}
+body.screen .meta{font-size:16px}
+body.screen .mcredit{display:none!important}
 </style>
 </head>
 <body>
@@ -255,7 +280,10 @@ body.admin .apanel{display:block;position:fixed;z-index:20;left:50%;transform:tr
 <div id="field" aria-live="polite"></div>
 <div class="empty" id="empty">السماء بانتظار أول غيمة… ☁️</div>
 
+<div class="wshade" id="wshade"></div>
 <form class="composer" id="composer" autocomplete="off" novalidate>
+  <button type="button" class="wclose" id="wclose" aria-label="إغلاق">✕</button>
+  <div class="wtitle">اكتبي كلمة من القلب لمعلماتنا 💜</div>
   <textarea id="msg" maxlength="200" placeholder="اكتب كلمة من القلب لمعلماتنا…" aria-label="رسالتك"></textarea>
   <div class="crow">
     <input id="name" maxlength="40" placeholder="اسم ولي الأمر (اختياري)" aria-label="الاسم">
@@ -271,6 +299,7 @@ body.admin .apanel{display:block;position:fixed;z-index:20;left:50%;transform:tr
 
 <div class="qr"><div class="code" id="qrcode"></div><div class="qt">امسح الرمز<br>وأطلق غيمتك ☁️<small>اكتب كلمة شكر لمعلمات العلوم والرياضيات</small></div></div>
 <button class="fsbtn" id="fsbtn">⛶ ملء الشاشة</button>
+<button class="writebtn" id="writebtn" type="button">✍️ اكتبي رسالتك هنا</button>
 <div class="credit">🎨 تصميم المعلمة: <b>هاجر البلوشية</b></div>
 
 <!-- ================= ADMIN ================= -->
@@ -595,7 +624,7 @@ $('composer').addEventListener('submit', async e=>{
   const err=validate(text,name);
   if(err){ hint.textContent=err; hint.className='err'; msgEl.focus(); return }
   let last=0; try{ last=+localStorage.getItem('gs_last')||0 }catch{}
-  if(Date.now()-last<15000){ hint.textContent='انتظر لحظات قبل إرسال غيمة أخرى 🌤'; hint.className='err'; return }
+  if(Date.now()-last<(MODE==='screen'?3000:15000)){ hint.textContent='انتظر لحظات قبل إرسال غيمة أخرى 🌤'; hint.className='err'; return }
   const btn=$('launch'); btn.disabled=true; btn.textContent='تنطلق…';
   const rect=btn.getBoundingClientRect();
   pendingLaunch={text, rect};
@@ -603,6 +632,7 @@ $('composer').addEventListener('submit', async e=>{
     const res=await store.add({text,name,category});
     try{ localStorage.setItem('gs_last',Date.now()) }catch{}
     msgEl.value=''; $('name').value=''; $('chars').textContent='0 / 200'; msgEl.blur();
+    if(MODE==='screen' && window.__closeWriting) window.__closeWriting();
     if(res.status==='pending'){ pendingLaunch=null; flyAway(rect); toast('وصلت غيمتك.. شكراً لمشاركتك المحبة 💜 ستظهر في السماء بعد المراجعة',4500) }
     else setTimeout(()=>toast('وصلت غيمتك.. شكراً لمشاركتك المحبة 💜'),1200);
   }catch(ex){
@@ -622,6 +652,13 @@ if(MODE==='screen'){
   let it; const wake=()=>{ document.body.classList.remove('idle'); clearTimeout(it); it=setTimeout(()=>document.body.classList.add('idle'),3500) };
   addEventListener('mousemove',wake); wake();
   setInterval(rotate, 9000);
+  let wt;
+  const closeW=()=>{ document.body.classList.remove('writing'); clearTimeout(wt); try{document.activeElement.blur()}catch{} };
+  const armW=()=>{ clearTimeout(wt); wt=setTimeout(closeW, 90000) };
+  window.__closeWriting=closeW;
+  $('writebtn').onclick=()=>{ document.body.classList.add('writing'); $('hint').textContent=''; armW(); setTimeout(()=>msgEl.focus(),150) };
+  $('wclose').onclick=closeW; $('wshade').onclick=closeW;
+  ['input','pointerdown'].forEach(ev=>$('composer').addEventListener(ev,armW));
 }
 if(MODE==='parent') setInterval(rotate, 12000);
 
